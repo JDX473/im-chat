@@ -1,6 +1,7 @@
 package com.im.chat.domain.friend;
 
-import com.im.chat.domain.common.UserId;
+import com.im.chat.common.UserId;
+import com.im.chat.common.enums.FriendStatus;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -15,14 +15,16 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>IM DDD</name>
-    <description>Spring Boot + DDD architecture IM system: friend, private chat, group chat</description>
+    <name>IM Chat</name>
+    <description>Hexagonal architecture IM: friend, private chat, group chat</description>
 
     <modules>
+        <module>im-chat-common</module>
         <module>im-chat-domain</module>
-        <module>im-chat-application</module>
-        <module>im-chat-infrastructure</module>
-        <module>im-chat-start</module>
+        <module>im-chat-infra</module>
+        <module>im-chat-app</module>
+        <module>im-chat-client</module>
+        <module>im-chat-main</module>
     </modules>
 
     <properties>
@@ -34,17 +36,27 @@
         <dependencies>
             <dependency>
                 <groupId>com.im.chat</groupId>
+                <artifactId>im-chat-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.im.chat</groupId>
                 <artifactId>im-chat-domain</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.im.chat</groupId>
-                <artifactId>im-chat-application</artifactId>
+                <artifactId>im-chat-infra</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.im.chat</groupId>
-                <artifactId>im-chat-infrastructure</artifactId>
+                <artifactId>im-chat-app</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.im.chat</groupId>
+                <artifactId>im-chat-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

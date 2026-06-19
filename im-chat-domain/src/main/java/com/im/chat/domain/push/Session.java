@@ -1,6 +1,6 @@
 package com.im.chat.domain.push;
 
-import com.im.chat.domain.common.UserId;
+import com.im.chat.common.UserId;
 import lombok.Value;
 
 import java.time.Instant;

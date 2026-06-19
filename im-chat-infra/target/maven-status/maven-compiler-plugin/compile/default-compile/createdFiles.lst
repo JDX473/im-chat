@@ -1,0 +1,14 @@
+com\im\chat\infra\persistence\po\FriendPO.class
+com\im\chat\infra\repository\UserRepositoryImpl.class
+com\im\chat\infra\persistence\repository\JpaFriendRepository.class
+com\im\chat\infra\repository\FriendRepositoryImpl.class
+com\im\chat\infra\repository\MessageRepositoryImpl.class
+com\im\chat\infra\repository\ConversationRepositoryImpl.class
+com\im\chat\infra\persistence\po\ConversationMemberPO.class
+com\im\chat\infra\persistence\po\MessagePO.class
+com\im\chat\infra\persistence\po\UserPO.class
+com\im\chat\infra\persistence\repository\JpaConversationRepository.class
+com\im\chat\infra\persistence\repository\JpaMessageRepository.class
+com\im\chat\infra\persistence\repository\JpaUserRepository.class
+com\im\chat\infra\persistence\po\ConversationPO.class
+com\im\chat\infra\persistence\repository\JpaConversationMemberRepository.class

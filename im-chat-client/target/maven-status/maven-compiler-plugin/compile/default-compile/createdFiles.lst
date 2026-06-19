@@ -1,0 +1,12 @@
+com\im\chat\client\ws\ImWebSocketHandler.class
+com\im\chat\client\controller\MessageController.class
+com\im\chat\client\controller\MessageController$MessageVO.class
+com\im\chat\client\controller\FriendController.class
+com\im\chat\client\controller\ConversationController$PrivateChatRequest.class
+com\im\chat\client\ws\PushServiceImpl.class
+com\im\chat\client\controller\ConversationController$CreateGroupRequest.class
+com\im\chat\client\controller\FriendController$FriendVO.class
+com\im\chat\client\controller\ConversationController$AddMemberRequest.class
+com\im\chat\client\controller\ConversationController$ConversationVO.class
+com\im\chat\client\controller\ConversationController.class
+com\im\chat\client\controller\FriendController$RequestBody_.class

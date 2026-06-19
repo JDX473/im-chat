@@ -1,0 +1,3 @@
+com\im\chat\app\service\MessageApplicationService.class
+com\im\chat\app\service\FriendApplicationService.class
+com\im\chat\app\service\ConversationApplicationService.class

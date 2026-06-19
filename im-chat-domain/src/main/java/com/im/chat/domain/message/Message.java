@@ -1,8 +1,10 @@
 package com.im.chat.domain.message;
 
-import com.im.chat.domain.common.ConversationId;
-import com.im.chat.domain.common.MessageId;
-import com.im.chat.domain.common.UserId;
+import com.im.chat.common.ConversationId;
+import com.im.chat.common.MessageId;
+import com.im.chat.common.UserId;
+import com.im.chat.common.enums.MessageType;
+import com.im.chat.common.enums.MessageStatus;
 import lombok.Getter;
 import lombok.Setter;
 

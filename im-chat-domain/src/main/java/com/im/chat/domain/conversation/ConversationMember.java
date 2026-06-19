@@ -1,6 +1,7 @@
 package com.im.chat.domain.conversation;
 
-import com.im.chat.domain.common.UserId;
+import com.im.chat.common.UserId;
+import com.im.chat.common.enums.MemberRole;
 import lombok.Value;
 
 import java.time.Instant;

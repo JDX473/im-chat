@@ -1,0 +1,14 @@
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\repository\ConversationRepositoryImpl.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\po\UserPO.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\repository\MessageRepositoryImpl.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\po\MessagePO.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\repository\JpaMessageRepository.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\po\ConversationMemberPO.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\repository\UserRepositoryImpl.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\repository\JpaUserRepository.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\repository\JpaConversationMemberRepository.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\repository\JpaConversationRepository.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\repository\FriendRepositoryImpl.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\po\FriendPO.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\po\ConversationPO.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\persistence\repository\JpaFriendRepository.java

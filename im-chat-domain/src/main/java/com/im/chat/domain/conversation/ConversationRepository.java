@@ -1,7 +1,7 @@
 package com.im.chat.domain.conversation;
 
-import com.im.chat.domain.common.ConversationId;
-import com.im.chat.domain.common.UserId;
+import com.im.chat.common.ConversationId;
+import com.im.chat.common.UserId;
 
 import java.util.List;
 import java.util.Optional;

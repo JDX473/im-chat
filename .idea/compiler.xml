@@ -2,22 +2,35 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="im-chat-application" />
-        <module name="im-chat-start" />
+        <module name="im-chat-app" />
+        <module name="im-chat-client" />
         <module name="im-chat-domain" />
-        <module name="im-chat-infrastructure" />
+        <module name="im-chat-infra" />
+        <module name="im-chat-main" />
+        <module name="im-chat-common" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="im-chat-application" target="17" />
+      <module name="im-chat-infrastructure" target="17" />
+      <module name="im-chat-start" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="im-chat-app" options="-parameters" />
       <module name="im-chat-application" options="-parameters" />
+      <module name="im-chat-client" options="-parameters" />
+      <module name="im-chat-common" options="-parameters" />
       <module name="im-chat-domain" options="-parameters" />
+      <module name="im-chat-infra" options="-parameters" />
       <module name="im-chat-infrastructure" options="-parameters" />
+      <module name="im-chat-main" options="-parameters" />
       <module name="im-chat-start" options="-parameters" />
     </option>
   </component>

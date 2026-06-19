@@ -1,6 +1,6 @@
 package com.im.chat.domain.user;
 
-import com.im.chat.domain.common.UserId;
+import com.im.chat.common.UserId;
 import lombok.Getter;
 
 /**

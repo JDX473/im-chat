@@ -1,0 +1,8 @@
+com\im\chat\common\MessageId.class
+com\im\chat\common\enums\ConversationType.class
+com\im\chat\common\ConversationId.class
+com\im\chat\common\enums\MessageStatus.class
+com\im\chat\common\enums\MessageType.class
+com\im\chat\common\UserId.class
+com\im\chat\common\enums\FriendStatus.class
+com\im\chat\common\enums\MemberRole.class

@@ -1,7 +1,9 @@
 package com.im.chat.domain.conversation;
 
-import com.im.chat.domain.common.ConversationId;
-import com.im.chat.domain.common.UserId;
+import com.im.chat.common.ConversationId;
+import com.im.chat.common.UserId;
+import com.im.chat.common.enums.ConversationType;
+import com.im.chat.common.enums.MemberRole;
 import lombok.Getter;
 import lombok.Setter;
 

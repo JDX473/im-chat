@@ -17,6 +17,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.im.chat</groupId>
+            <artifactId>im-chat-common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
