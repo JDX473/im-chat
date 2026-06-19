@@ -89,8 +89,10 @@ public class MessageApplicationService implements InboundMessageHandler {
         // 7. Increment unread count for receiver
         unreadTracker.increment(convId, receiver);
 
-        // 8. Publish downstream → im-long-connection → WebSocket push
-        mqProducer.publish(message, conversation.memberIds());
+        // 8. Publish downstream → im-long-connection → WebSocket push (exclude sender)
+        Set<UserId> recipients = new LinkedHashSet<>(conversation.memberIds());
+        recipients.remove(sender);
+        mqProducer.publish(message, recipients);
 
         return message;
     }

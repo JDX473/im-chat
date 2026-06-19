@@ -21,12 +21,12 @@ import org.springframework.stereotype.Component;
 /**
  * Consumes client messages from im-long-connection via RocketMQ.
  * <p>
- * Topic: "netty_server_chat_msg" (im-long-connection's producer topic, tag "im_chat").
+ * Topic: "client2server" (im-long-connection's producer topic, tag "im_chat").
  * Message format: NettyServerMessageDTO JSON — senderId, receiverId, message, messageType.
  */
 @Component
 @RocketMQMessageListener(
-        topic = "netty_server_chat_msg",
+        topic = "client2server",
         consumerGroup = "im_chat_business",
         selectorExpression = "im_chat"
 )

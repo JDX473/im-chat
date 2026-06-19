@@ -11,3 +11,4 @@ com\im\chat\domain\message\UnreadTracker.class
 com\im\chat\domain\message\MessagePublisher.class
 com\im\chat\domain\friend\Friend.class
 com\im\chat\domain\user\User.class
+com\im\chat\domain\push\SessionRouter.class

@@ -6,6 +6,7 @@ E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\persistence\po\Conversa
 E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\repository\MessageRepositoryImpl.java
 E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\mq\RocketMQChatConsumer.java
 E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\persistence\repository\JpaConversationMemberRepository.java
+E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\repository\RedisSessionRouter.java
 E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\persistence\po\MessagePO.java
 E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\persistence\po\FriendPO.java
 E:\im-chat\im-chat-infra\src\main\java\com\im\chat\infra\repository\UserRepositoryImpl.java

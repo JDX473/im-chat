@@ -5,12 +5,12 @@ spring:
   application:
     name: im-chat
 
-  # MySQL (align with webchat)
+  # MySQL
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/im_chat?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://103.36.220.40:3306/im_chat?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root
+    username: jdx
+    password: jiangdongxu0211
 
   jpa:
     hibernate:
@@ -27,10 +27,12 @@ spring:
     deserialization:
       fail-on-unknown-properties: false
 
-  # Redis (align with webchat: message cache ZSET + unread count Hash)
+  # Redis (message cache ZSET + unread count Hash)
   redis:
-    host: 127.0.0.1
+    host: 103.36.220.40
     port: 6379
+    username: jdx
+    password: jiangdongxu0211
     database: 0
     timeout: 5000ms
     jedis:
@@ -41,7 +43,7 @@ spring:
 
 # RocketMQ (align with webchat: message transport to/from im-long-connection)
 rocketmq:
-  name-server: 127.0.0.1:9876
+  name-server: 103.36.220.40:9876
   producer:
     group: pg_im_chat
     send-message-timeout: 3000

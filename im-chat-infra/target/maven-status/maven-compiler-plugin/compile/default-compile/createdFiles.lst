@@ -14,5 +14,6 @@ com\im\chat\infra\persistence\repository\JpaConversationRepository.class
 com\im\chat\infra\persistence\repository\JpaMessageRepository.class
 com\im\chat\infra\persistence\repository\JpaUserRepository.class
 com\im\chat\infra\persistence\po\ConversationPO.class
+com\im\chat\infra\repository\RedisSessionRouter.class
 com\im\chat\infra\mq\RocketMQChatProducer.class
 com\im\chat\infra\persistence\repository\JpaConversationMemberRepository.class
