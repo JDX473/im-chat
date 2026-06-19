@@ -1,6 +1,7 @@
 package com.im.chat.infra.mq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.im.chat.common.UserId;
 import com.im.chat.domain.message.Message;
 import com.im.chat.domain.message.MessagePublisher;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Sends processed messages back to im-long-connection for push delivery.
@@ -25,7 +27,8 @@ public class RocketMQChatProducer implements MessagePublisher {
     private static final Logger log = LoggerFactory.getLogger(RocketMQChatProducer.class);
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final String TOPIC_DOWNSTREAM = "im_chat_downstream";
+    /** im-long-connection's Consumer-1 subscribes to this topic */
+    private static final String TOPIC_DOWNSTREAM = "webchat_ugc_messages";
 
     private final RocketMQTemplate rocketMQTemplate;
 
@@ -37,25 +40,25 @@ public class RocketMQChatProducer implements MessagePublisher {
      * Send a processed message to im-long-connection for push to clients.
      */
     @Override
-    public void publish(Message message) {
+    public void publish(Message message, Set<UserId> recipients) {
         try {
-            Map<String, Object> payload = new LinkedHashMap<>();
-            payload.put("messageId", message.getMessageId().getValue());
-            payload.put("conversationId", message.getConversationId().getValue());
-            payload.put("senderId", message.getSenderId() != null ? message.getSenderId().getValue() : "SYSTEM");
-            payload.put("content", message.getContent());
-            payload.put("type", message.getType().name());
-            payload.put("createdAt", message.getCreatedAt().toEpochMilli());
+            for (UserId recipient : recipients) {
+                // Format: UgcServerMessageDTO — what im-long-connection's IMMessageHandler expects
+                Map<String, Object> payload = new LinkedHashMap<>();
+                payload.put("msgId", message.getMessageId().getValue());
+                payload.put("senderId", message.getSenderId() != null ? message.getSenderId().getValue() : "SYSTEM");
+                payload.put("receiverId", recipient.getValue());  // im-long-connection routes by this
+                payload.put("message", message.getContent());
+                payload.put("msgTime", message.getCreatedAt().toEpochMilli());
+                payload.put("read", false);
 
-            String json = mapper.writeValueAsString(payload);
-
-            // Send to all nodes (broadcast) — im-long-connection will route to the right one
-            rocketMQTemplate.convertAndSend(TOPIC_DOWNSTREAM, json);
-
-            log.debug("Produced downstream message: msgId={}", message.getMessageId());
+                String json = mapper.writeValueAsString(payload);
+                rocketMQTemplate.convertAndSend(TOPIC_DOWNSTREAM, json);
+            }
+            log.debug("Produced downstream: msgId={}, recipients={}", message.getMessageId(), recipients.size());
 
         } catch (Exception e) {
-            log.error("Failed to produce downstream message: msgId={}", message.getMessageId(), e);
+            log.error("Failed to produce downstream: msgId={}", message.getMessageId(), e);
         }
     }
 }
