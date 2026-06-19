@@ -10,12 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Message history query (REST).
+ * Message history and read status (REST).
  * <p>
- * Note: message SENDING is done through WebSocket, not REST.
- * Connect to ws://host:8080/im/ws?userId=xxx and send:
- * <pre>{ "conversationId": "xxx", "content": "hello", "messageType": "TEXT" }</pre>
- * senderId is derived from the WebSocket handshake userId — no spoofing.
+ * Sending is via im-long-connection WebSocket → RocketMQ("im_chat_upstream") → im-chat.
+ * Receiving is via im-long-connection WebSocket push ← RocketMQ("im_chat_downstream") ← im-chat.
  */
 @RestController
 @RequestMapping("/api/messages")
@@ -24,13 +22,29 @@ public class MessageController {
 
     private final MessageApplicationService service;
 
-    /** Query message history (paginated, newest first). */
+    /** Query message history (cache-aside: Redis ZSET → MySQL). */
     @GetMapping
     public List<MessageVO> history(@RequestParam String conversationId,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "20") int size) {
         return service.queryHistory(conversationId, page, size)
                 .stream().map(this::toVO).collect(Collectors.toList());
+    }
+
+    /** Get unread count for a user in a conversation. */
+    @GetMapping("/unread")
+    public UnreadVO unread(@RequestParam String conversationId, @RequestParam String userId) {
+        int count = service.getUnreadCount(conversationId, userId);
+        UnreadVO vo = new UnreadVO();
+        vo.conversationId = conversationId;
+        vo.count = count;
+        return vo;
+    }
+
+    /** Mark all messages in a conversation as read. */
+    @PostMapping("/read")
+    public void markRead(@RequestParam String conversationId, @RequestParam String userId) {
+        service.markRead(conversationId, userId);
     }
 
     private MessageVO toVO(Message msg) {
@@ -54,5 +68,11 @@ public class MessageController {
         String type;
         String status;
         long createdAt;
+    }
+
+    @Data
+    public static class UnreadVO {
+        String conversationId;
+        int count;
     }
 }

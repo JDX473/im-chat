@@ -5,31 +5,46 @@ spring:
   application:
     name: im-chat
 
-  # H2 in-memory database (for dev/demo)
+  # MySQL (align with webchat)
   datasource:
-    url: jdbc:h2:mem:im_ddd;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    url: jdbc:mysql://127.0.0.1:3306/im_chat?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
   jackson:
     serialization:
       write-dates-as-timestamps: true
     deserialization:
       fail-on-unknown-properties: false
+
+  # Redis (align with webchat: message cache ZSET + unread count Hash)
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+    timeout: 5000ms
+    jedis:
+      pool:
+        max-active: 100
+        max-wait: -1ms
+        min-idle: 10
+
+# RocketMQ (align with webchat: message transport to/from im-long-connection)
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: pg_im_chat
+    send-message-timeout: 3000
 
 logging:
   level:
