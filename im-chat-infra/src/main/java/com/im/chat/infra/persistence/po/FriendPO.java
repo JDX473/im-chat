@@ -9,9 +9,7 @@ import java.util.Date;
  */
 @Data
 @Entity
-@Table(name = "web_chat_friend", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "friend_id"})
-})
+@Table(name = "web_chat_friend")
 public class FriendPO {
 
     @Id
