@@ -9,7 +9,6 @@ import com.im.chat.infra.persistence.repository.JpaFriendRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,6 +61,7 @@ public class FriendRepositoryImpl implements FriendRepository {
         friend.setUserId(UserId.of(po.getUserId()));
         friend.setFriendId(UserId.of(po.getFriendId()));
         friend.setStatus(po.getStatus() != null ? po.getStatus() : FriendStatus.PENDING);
+        friend.setRemark(po.getRemark());
         if (po.getApplyDate() != null) friend.setCreatedAt(po.getApplyDate().toInstant());
         if (po.getHandleDate() != null) friend.setUpdatedAt(po.getHandleDate().toInstant());
         return friend;
@@ -73,6 +73,7 @@ public class FriendRepositoryImpl implements FriendRepository {
         po.setUserId(friend.getUserId().getValue());
         po.setFriendId(friend.getFriendId().getValue());
         po.setStatus(friend.getStatus());
+        po.setRemark(friend.getRemark());
         if (friend.getCreatedAt() != null) po.setApplyDate(java.util.Date.from(friend.getCreatedAt()));
         if (friend.getUpdatedAt() != null) po.setHandleDate(java.util.Date.from(friend.getUpdatedAt()));
         return po;

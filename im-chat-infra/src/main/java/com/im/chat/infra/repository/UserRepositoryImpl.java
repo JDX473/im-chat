@@ -20,13 +20,17 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(UserId userId) {
-        return jpaRepo.findById(userId.getValue()).map(this::toDomain);
+        return jpaRepo.findByUserId(userId.getValue()).map(this::toDomain);
     }
 
     @Override
     public List<User> findByIds(List<UserId> userIds) {
-        List<String> ids = userIds.stream().map(UserId::getValue).collect(Collectors.toList());
-        return jpaRepo.findAllById(ids).stream().map(this::toDomain).collect(Collectors.toList());
+        return userIds.stream()
+                .map(id -> jpaRepo.findByUserId(id.getValue()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(this::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -38,7 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean exists(UserId userId) {
-        return jpaRepo.existsById(userId.getValue());
+        return jpaRepo.findByUserId(userId.getValue()).isPresent();
     }
 
     private User toDomain(UserPO po) {

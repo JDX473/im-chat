@@ -31,6 +31,7 @@ public class FriendPO {
     private Date handleDate;
 
     private Integer status;
+    private String remark;
 
     @Version
     private Integer version;
