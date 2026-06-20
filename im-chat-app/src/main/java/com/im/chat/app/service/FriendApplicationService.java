@@ -70,8 +70,8 @@ public class FriendApplicationService {
         if (!request.getFriendId().equals(me)) {
             throw new IllegalArgumentException("Only the recipient can reject a friend request");
         }
-        request.reject();
-        friendRepository.save(request);
+        // Delete the row to allow resending requests (avoids unique constraint violation)
+        friendRepository.delete(request);
     }
 
     /** Delete a friend. */

@@ -39,7 +39,8 @@ public class RocketMQChatConsumer implements RocketMQListener<String> {
             String content = node.get("message").asText();
             int typeCode = node.has("messageType") ? node.get("messageType").asInt() : 1;
 
-            if (senderId == null || receiverId == null || content == null) {
+            // asText() never returns null — check for empty strings instead
+            if (senderId.isEmpty() || receiverId.isEmpty() || content.isEmpty()) {
                 log.warn("Invalid message format: {}", body);
                 return;
             }
