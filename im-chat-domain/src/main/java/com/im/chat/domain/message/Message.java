@@ -1,69 +1,65 @@
 package com.im.chat.domain.message;
 
-import com.im.chat.common.ConversationId;
-import com.im.chat.common.MessageId;
 import com.im.chat.common.UserId;
-import com.im.chat.common.enums.MessageType;
-import com.im.chat.common.enums.MessageStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
 
 /**
- * Message aggregate root.
- * <p>
- * Messages are append-only. Each message belongs to exactly one conversation.
- * Messages are NOT part of the Conversation aggregate because:
- * <ul>
- *   <li>High volume — loading all messages with a conversation wouldn't scale</li>
- *   <li>No invariant spans multiple messages — each message is independently valid</li>
- *   <li>Messages reference the conversation by ID, forming a looser association</li>
- * </ul>
+ * Message aggregate — aligns with webchat's web_chat_message.
+ * Private chat: sender=A, receiver=B.
+ * Group chat: sender=A, receiver=groupId, proxySender sets the real sender.
  */
 @Getter
 @Setter
 public class Message {
 
-    private MessageId messageId;
-    private ConversationId conversationId;
+    private Long id;
     private UserId senderId;
+    private UserId proxySenderId;   // group proxy sender
+    private UserId receiverId;
+    private Integer type;           // 1=TEXT, 2=IMAGE, 3=VIDEO, 4=FILE, 5=CARD
     private String content;
-    private MessageType type;
-    private MessageStatus status;
-    private Instant createdAt;
+    private Boolean isRead;
+    private Instant sendDate;
+    private Instant updateDate;
 
     public Message() {}
 
-    public static Message send(MessageId messageId, ConversationId conversationId,
-                                UserId senderId, String content, MessageType type) {
-        if (content == null || content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Message content cannot be blank");
-        }
-        Message msg = new Message();
-        msg.messageId = messageId;
-        msg.conversationId = conversationId;
-        msg.senderId = senderId;
-        msg.content = content;
-        msg.type = type != null ? type : MessageType.TEXT;
-        msg.status = MessageStatus.SENT;
-        msg.createdAt = Instant.now();
-        return msg;
+    /** Create a private chat message. */
+    public static Message createPrivate(UserId sender, UserId receiver, String content, Integer type) {
+        Message m = new Message();
+        m.senderId = sender;
+        m.receiverId = receiver;
+        m.content = content;
+        m.type = type != null ? type : 1;  // default TEXT
+        m.isRead = false;
+        m.sendDate = Instant.now();
+        return m;
     }
 
-    public static Message system(MessageId messageId, ConversationId conversationId, String content) {
-        return send(messageId, conversationId, null, content, MessageType.SYSTEM);
+    /** Create a group chat message (proxy sender pattern). */
+    public static Message createGroup(UserId sender, UserId groupId, String content, Integer type) {
+        Message m = new Message();
+        m.senderId = sender;
+        m.receiverId = groupId;
+        m.content = content;
+        m.type = type != null ? type : 1;
+        m.isRead = false;
+        m.sendDate = Instant.now();
+        return m;
     }
 
-    public void markDelivered() {
-        this.status = MessageStatus.DELIVERED;
-    }
-
-    public void markRead() {
-        this.status = MessageStatus.READ;
-    }
-
-    public boolean isSystemMessage() {
-        return this.type == MessageType.SYSTEM;
+    /** Create a system message. */
+    public static Message system(UserId receiverId, String content) {
+        Message m = new Message();
+        m.senderId = null;
+        m.receiverId = receiverId;
+        m.content = content;
+        m.type = 1;
+        m.isRead = false;
+        m.sendDate = Instant.now();
+        return m;
     }
 }

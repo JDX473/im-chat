@@ -1,21 +1,13 @@
 package com.im.chat.app.service;
 
-import com.im.chat.common.ConversationId;
-import com.im.chat.common.MessageId;
 import com.im.chat.common.UserId;
-import com.im.chat.common.enums.ConversationType;
 import com.im.chat.common.enums.FriendStatus;
-import com.im.chat.common.enums.MessageType;
-import com.im.chat.domain.conversation.Conversation;
-import com.im.chat.domain.conversation.ConversationRepository;
 import com.im.chat.domain.friend.Friend;
 import com.im.chat.domain.friend.FriendRepository;
 import com.im.chat.domain.message.InboundMessageHandler;
 import com.im.chat.domain.message.Message;
-import com.im.chat.domain.message.MessageCache;
 import com.im.chat.domain.message.MessagePublisher;
 import com.im.chat.domain.message.MessageRepository;
-import com.im.chat.domain.message.UnreadTracker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,116 +15,59 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 /**
- * Application service for message use cases.
- * <p>
- * Messages arrive from im-long-connection via RocketMQ (not WebSocket).
- * After processing (validation + persistence), the processed message
- * is sent back via RocketMQ for im-long-connection to push to clients.
+ * Application service for messages — aligns with webchat's ChatMessageService + PersistentMessageService.
+ * Messages reference sender/receiver directly (no conversation entity).
  */
 @Service
 @RequiredArgsConstructor
 public class MessageApplicationService implements InboundMessageHandler {
 
     private final MessageRepository messageRepository;
-    private final ConversationRepository conversationRepository;
     private final FriendRepository friendRepository;
     private final MessagePublisher mqProducer;
-    private final MessageCache messageCache;
-    private final UnreadTracker unreadTracker;
 
     /**
-     * Process an inbound message from the transport layer (im-long-connection via RocketMQ).
-     * Validates, persists, and produces a downstream message for push delivery.
+     * Process an inbound message from im-long-connection (via RocketMQ).
+     * Validates sender-receiver are friends, persists to web_chat_message, publishes downstream.
      */
-    @Transactional
     @Override
-    public Message handle(String senderId, String receiverId, String content, MessageType type) {
+    @Transactional
+    public Message handle(String senderId, String receiverId, String content, Integer type) {
         UserId sender = UserId.of(senderId);
         UserId receiver = UserId.of(receiverId);
 
-        // 1. Resolve conversation: get-or-create private chat between sender & receiver
-        Conversation conversation = conversationRepository.findPrivateConversation(sender, receiver)
-                .orElseGet(() -> {
-                    ConversationId id = ConversationId.of(UUID.randomUUID().toString());
-                    return conversationRepository.save(Conversation.createPrivate(id, sender, receiver));
-                });
-
-        ConversationId convId = conversation.getConversationId();
-
-        // 2. Validate: sender is a member
-        if (!conversation.containsMember(sender)) {
-            throw new IllegalStateException("You are not a member of this conversation");
-        }
-
-        if (!conversation.isActive()) {
-            throw new IllegalStateException("Conversation has been disbanded");
-        }
-
-        // 3. Validate: both parties must be friends
+        // Validate: sender and receiver must be friends
         Friend relationship = friendRepository.findByUsers(sender, receiver)
                 .orElseThrow(() -> new IllegalStateException("Not friends — cannot send message"));
-
         if (relationship.getStatus() != FriendStatus.ACCEPTED) {
             throw new IllegalStateException("Cannot send message: friend status is " + relationship.getStatus());
         }
 
-        // 4. Create message (domain logic)
-        MessageId msgId = MessageId.of("MSG_" + UUID.randomUUID().toString().replace("-", ""));
-        Message message = Message.send(msgId, convId, sender, content, type);
-
-        // 5. Persist to MySQL (offline messages live here)
+        // Create and persist message (aligns with web_chat_message)
+        Message message = Message.createPrivate(sender, receiver, content, type);
         message = messageRepository.save(message);
 
-        // 6. Cache in Redis ZSET (hot data, like webchat)
-        messageCache.cache(message);
-
-        // 7. Increment unread count for receiver
-        unreadTracker.increment(convId, receiver);
-
-        // 8. Publish downstream → im-long-connection → WebSocket push (exclude sender)
-        Set<UserId> recipients = new LinkedHashSet<>(conversation.memberIds());
-        recipients.remove(sender);
-        mqProducer.publish(message, recipients);
+        // Publish downstream for push (after commit)
+        final Message finalMsg = message;
+        final Set<UserId> recipients = new LinkedHashSet<>(Arrays.asList(receiver));
+        org.springframework.transaction.support.TransactionSynchronizationManager
+                .registerSynchronization(new org.springframework.transaction.support.TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        mqProducer.publish(finalMsg, recipients);
+                    }
+                });
 
         return message;
     }
 
-    /** Query message history: cache-aside (Redis hot → MySQL cold). */
-    public List<Message> queryHistory(String conversationId, int page, int size) {
-        ConversationId convId = ConversationId.of(conversationId);
-
-        // First page from Redis ZSET (hot data, like webchat's cache pattern)
-        if (page == 0) {
-            List<Message> cached = messageCache.getRecent(convId, size);
-            if (!cached.isEmpty()) {
-                return cached;
-            }
-        }
-        // Cache miss or beyond hot range → MySQL
-        return messageRepository.findByConversation(convId, page, size);
+    /** Query private chat history. */
+    public List<Message> queryPrivateHistory(String userA, String userB, int page, int size) {
+        return messageRepository.findPrivateMessages(userA, userB, page, size);
     }
 
-    /** Get unread count for a user in a conversation. */
-    public int getUnreadCount(String conversationId, String userId) {
-        return unreadTracker.getCount(ConversationId.of(conversationId), UserId.of(userId));
-    }
-
-    /** Mark messages as read (clear unread count). */
-    public void markRead(String conversationId, String userId) {
-        unreadTracker.clear(ConversationId.of(conversationId), UserId.of(userId));
-    }
-
-    /** System message: member joined / left group. */
-    @Transactional
-    public void sendSystemMessage(String conversationId, String content) {
-        ConversationId convId = ConversationId.of(conversationId);
-        MessageId msgId = MessageId.of("SYS_" + UUID.randomUUID().toString().replace("-", ""));
-        Message sysMsg = Message.system(msgId, convId, content);
-        messageRepository.save(sysMsg);
-
-        Conversation conversation = conversationRepository.findById(convId).orElse(null);
-        if (conversation != null) {
-            mqProducer.publish(sysMsg, conversation.memberIds());
-        }
+    /** Query group chat history. */
+    public List<Message> queryGroupHistory(String groupId, int page, int size) {
+        return messageRepository.findGroupMessages(groupId, page, size);
     }
 }

@@ -1,19 +1,23 @@
 package com.im.chat.common.enums;
 
 /**
- * Friend relationship status.
+ * Friend status codes matching webchat's web_chat_friend.status.
  */
-public enum FriendStatus {
+public class FriendStatus {
+    public static final int PENDING = 0;
+    public static final int ACCEPTED = 1;
+    public static final int BLOCKED = 2;
+    public static final int DELETED = 3;
 
-    /** Friend request sent, waiting for acceptance */
-    PENDING,
+    private FriendStatus() {}
 
-    /** Friend relationship established */
-    ACCEPTED,
-
-    /** Friend relationship blocked by one party */
-    BLOCKED,
-
-    /** Friend relationship removed */
-    DELETED
+    public static String nameOf(int status) {
+        switch (status) {
+            case 0: return "PENDING";
+            case 1: return "ACCEPTED";
+            case 2: return "BLOCKED";
+            case 3: return "DELETED";
+            default: return "UNKNOWN";
+        }
+    }
 }

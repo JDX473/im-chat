@@ -1,6 +1,6 @@
 package com.im.chat.domain.friend;
 
-import com.im.chat.common.enums.FriendStatus;
+
 import com.im.chat.common.UserId;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public interface FriendRepository {
 
     List<Friend> findByUserId(UserId userId);
 
-    List<Friend> findByUserIdAndStatus(UserId userId, FriendStatus status);
+    List<Friend> findByUserIdAndStatus(UserId userId, int status);
 
     boolean isFriend(UserId userId, UserId friendId);
 

@@ -8,13 +8,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * webchat's web_chat_friend table queries.
+ */
 @Repository
 public interface JpaFriendRepository extends JpaRepository<FriendPO, Long> {
 
     @Query("SELECT f FROM FriendPO f WHERE (f.userId = ?1 AND f.friendId = ?2) OR (f.userId = ?2 AND f.friendId = ?1)")
     Optional<FriendPO> findByUsers(String userA, String userB);
 
+    @Query("SELECT f FROM FriendPO f WHERE f.userId = ?1 OR f.friendId = ?1")
     List<FriendPO> findByUserId(String userId);
 
-    List<FriendPO> findByUserIdAndStatus(String userId, String status);
+    @Query("SELECT f FROM FriendPO f WHERE (f.userId = ?1 OR f.friendId = ?1) AND f.status = ?2")
+    List<FriendPO> findByUserIdAndStatus(String userId, Integer status);
 }

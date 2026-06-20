@@ -1,14 +1,15 @@
 package com.im.chat.infra.repository;
 
 import com.im.chat.common.UserId;
+import com.im.chat.common.enums.FriendStatus;
 import com.im.chat.domain.friend.Friend;
 import com.im.chat.domain.friend.FriendRepository;
-import com.im.chat.common.enums.FriendStatus;
 import com.im.chat.infra.persistence.po.FriendPO;
 import com.im.chat.infra.persistence.repository.JpaFriendRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,15 +32,15 @@ public class FriendRepositoryImpl implements FriendRepository {
     }
 
     @Override
-    public List<Friend> findByUserIdAndStatus(UserId userId, FriendStatus status) {
-        return jpaRepo.findByUserIdAndStatus(userId.getValue(), status.name()).stream()
+    public List<Friend> findByUserIdAndStatus(UserId userId, int status) {
+        return jpaRepo.findByUserIdAndStatus(userId.getValue(), status).stream()
                 .map(this::toDomain).collect(Collectors.toList());
     }
 
     @Override
     public boolean isFriend(UserId userId, UserId friendId) {
         return jpaRepo.findByUsers(userId.getValue(), friendId.getValue())
-                .map(po -> po.getStatus().equals(FriendStatus.ACCEPTED.name()))
+                .map(po -> po.getStatus() != null && po.getStatus() == FriendStatus.ACCEPTED)
                 .orElse(false);
     }
 
@@ -60,10 +61,9 @@ public class FriendRepositoryImpl implements FriendRepository {
         friend.setId(po.getId());
         friend.setUserId(UserId.of(po.getUserId()));
         friend.setFriendId(UserId.of(po.getFriendId()));
-        friend.setStatus(FriendStatus.valueOf(po.getStatus()));
-        friend.setRemark(po.getRemark());
-        friend.setCreatedAt(po.getCreatedAt());
-        friend.setUpdatedAt(po.getUpdatedAt());
+        friend.setStatus(po.getStatus() != null ? po.getStatus() : FriendStatus.PENDING);
+        if (po.getApplyDate() != null) friend.setCreatedAt(po.getApplyDate().toInstant());
+        if (po.getHandleDate() != null) friend.setUpdatedAt(po.getHandleDate().toInstant());
         return friend;
     }
 
@@ -72,10 +72,9 @@ public class FriendRepositoryImpl implements FriendRepository {
         po.setId(friend.getId());
         po.setUserId(friend.getUserId().getValue());
         po.setFriendId(friend.getFriendId().getValue());
-        po.setStatus(friend.getStatus().name());
-        po.setRemark(friend.getRemark());
-        po.setCreatedAt(friend.getCreatedAt());
-        po.setUpdatedAt(friend.getUpdatedAt());
+        po.setStatus(friend.getStatus());
+        if (friend.getCreatedAt() != null) po.setApplyDate(java.util.Date.from(friend.getCreatedAt()));
+        if (friend.getUpdatedAt() != null) po.setHandleDate(java.util.Date.from(friend.getUpdatedAt()));
         return po;
     }
 }

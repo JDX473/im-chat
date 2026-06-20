@@ -1,24 +1,37 @@
 package com.im.chat.infra.persistence.po;
 
 import lombok.Data;
-
 import javax.persistence.*;
-import java.time.Instant;
+import java.util.Date;
 
+/**
+ * Maps to webchat's web_chat_friend table.
+ */
 @Data
 @Entity
-@Table(name = "im_friend", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"userId", "friendId"})
+@Table(name = "web_chat_friend", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "friend_id"})
 })
 public class FriendPO {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id", nullable = false)
     private String userId;
+
+    @Column(name = "friend_id", nullable = false)
     private String friendId;
-    private String status;    // PENDING / ACCEPTED / BLOCKED / DELETED
-    private String remark;
-    private Instant createdAt;
-    private Instant updatedAt;
+
+    @Column(name = "apply_date")
+    private Date applyDate;
+
+    @Column(name = "handle_date")
+    private Date handleDate;
+
+    private Integer status;
+
+    @Version
+    private Integer version;
 }

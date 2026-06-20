@@ -5,33 +5,29 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Maps to webchat's web_chat_user table.
+ * Maps to webchat's web_chat_group_user table exactly.
  */
 @Data
 @Entity
-@Table(name = "web_chat_user")
-public class UserPO {
+@Table(name = "web_chat_group_user", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"group_id", "user_id"})
+})
+public class GroupUserPO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(name = "group_id", nullable = false)
+    private String groupId;
+
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "user_name")
-    private String userName;
-
-    private String mobile;
-    private String password;
-    private String photo;
-    private String signature;
-
-    @Column(name = "role_code")
-    private Integer roleCode;
-
+    /** 0=normal, 1=owner, 2=admin */
     private Integer status;
 
+    // BaseEntity fields
     @Column(name = "create_by")
     private String createBy;
 

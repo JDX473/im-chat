@@ -42,17 +42,19 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private User toDomain(UserPO po) {
-        User user = new User(UserId.of(po.getUserId()), po.getNickname(), po.getAvatar());
-        if (po.isOnline()) user.markOnline();
+        User user = new User(UserId.of(po.getUserId()),
+                po.getUserName() != null ? po.getUserName() : po.getUserId(),
+                po.getPhoto());
+        if (po.getStatus() != null && po.getStatus() == 1) user.markOnline();
         return user;
     }
 
     private UserPO toPO(User user) {
         UserPO po = new UserPO();
         po.setUserId(user.getUserId().getValue());
-        po.setNickname(user.getNickname());
-        po.setAvatar(user.getAvatar());
-        po.setOnline(user.isOnline());
+        po.setUserName(user.getNickname());
+        po.setPhoto(user.getAvatar());
+        po.setStatus(user.isOnline() ? 1 : 0);
         return po;
     }
 }

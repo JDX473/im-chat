@@ -24,7 +24,7 @@ public class Friend {
     private Long id;
     private UserId userId;
     private UserId friendId;
-    private FriendStatus status;
+    private int status;
     private String remark;
     private Instant createdAt;
     private Instant updatedAt;

@@ -24,12 +24,14 @@ public class FriendController {
 
     @PostMapping("/accept")
     public void accept(@RequestBody RequestBody_ body) {
-        service.acceptRequest(body.fromUserId, body.toUserId);
+        // toUserId is the acceptor, fromUserId is who sent the request
+        service.acceptRequest(body.toUserId, body.fromUserId);
     }
 
     @PostMapping("/reject")
     public void reject(@RequestBody RequestBody_ body) {
-        service.rejectRequest(body.fromUserId, body.toUserId);
+        // toUserId is the rejector, fromUserId is who sent the request
+        service.rejectRequest(body.toUserId, body.fromUserId);
     }
 
     @DeleteMapping("/{friendId}")
@@ -61,7 +63,7 @@ public class FriendController {
         FriendVO vo = new FriendVO();
         vo.userId = f.getUserId().getValue();
         vo.friendId = f.getFriendId().getValue();
-        vo.status = f.getStatus().name();
+        vo.status = String.valueOf(f.getStatus());
         vo.remark = f.getRemark();
         return vo;
     }

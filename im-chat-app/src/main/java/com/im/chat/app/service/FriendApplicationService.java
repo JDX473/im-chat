@@ -50,6 +50,10 @@ public class FriendApplicationService {
         Friend request = friendRepository.findByUsers(from, me)
                 .orElseThrow(() -> new IllegalArgumentException("No friend request found"));
 
+        // Guard: only the recipient can accept (not the sender)
+        if (!request.getFriendId().equals(me)) {
+            throw new IllegalArgumentException("Only the recipient can accept a friend request");
+        }
         request.accept();
         friendRepository.save(request);
     }
@@ -63,6 +67,9 @@ public class FriendApplicationService {
         Friend request = friendRepository.findByUsers(from, me)
                 .orElseThrow(() -> new IllegalArgumentException("No friend request found"));
 
+        if (!request.getFriendId().equals(me)) {
+            throw new IllegalArgumentException("Only the recipient can reject a friend request");
+        }
         request.reject();
         friendRepository.save(request);
     }
