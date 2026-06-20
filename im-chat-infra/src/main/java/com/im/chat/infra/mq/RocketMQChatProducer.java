@@ -45,6 +45,7 @@ public class RocketMQChatProducer implements MessagePublisher {
             payload.put("senderId", message.getSenderId() != null ? message.getSenderId().getValue() : null);
             payload.put("receiverId", recipient.getValue());
             payload.put("message", message.getContent());
+            payload.put("messageType", message.getType() != null ? message.getType() : 1);
             payload.put("msgTime", System.currentTimeMillis());
             payload.put("read", false);
 

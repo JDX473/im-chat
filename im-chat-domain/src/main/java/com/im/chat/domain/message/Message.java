@@ -19,7 +19,7 @@ public class Message {
     private UserId senderId;
     private UserId proxySenderId;   // group proxy sender
     private UserId receiverId;
-    private Integer type;           // 1=TEXT, 2=IMAGE, 3=VIDEO, 4=FILE, 5=CARD
+    private Integer type;           // ChatMessageTypeEnum: 1=TEXT, 2=FILE, 3=RED_PACKET, 4=ARTICLE, 5=CARD
     private String content;
     private Boolean isRead;
     private Instant sendDate;

@@ -44,7 +44,19 @@ public class RocketMQChatConsumer implements RocketMQListener<String> {
                 return;
             }
 
-            messageHandler.handle(senderId, receiverId, content, typeCode);
+            // Map MallImMessageTypeEnum (protocol) to ChatMessageTypeEnum (DB)
+            // Protocol: 1=START_INPUT, 2=EXIT_INPUT, 3=TEXT, 4=IMAGE, 5=CARD, 6=IMAGE_TEXT
+            // DB:       1=TEXT, 2=FILE, 3=RED_PACKET, 4=ARTICLE...
+            // Forwarding types (1,2) are already handled by im-long-connection directly.
+            // For persistence: map 3→1(TEXT), 4→2(FILE), 5→3(RED_PACKET), 6→4(ARTICLE)
+            int dbType;
+            switch (typeCode) {
+                case 4: dbType = 2; break;   // IMAGE → FILE
+                case 5: dbType = 5; break;   // CARD → keep as is
+                case 6: dbType = 6; break;   // IMAGE_TEXT → keep
+                default: dbType = 1;          // TEXT (3→1) and everything else
+            }
+            messageHandler.handle(senderId, receiverId, content, dbType);
 
         } catch (Exception e) {
             log.error("Error consuming message: {}", body, e);
